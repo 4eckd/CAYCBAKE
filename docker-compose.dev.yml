@@ -1,0 +1,70 @@
+version: '3.8'
+
+# Development overrides for docker-compose.yml
+services:
+  cayc-bake:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: python-base  # Use base stage for faster rebuilds
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+    volumes:
+      # Mount source code for hot reloading
+      - ./scripts:/app/scripts
+      - ./configs:/app/configs
+      - ./tests:/app/tests
+      # Development tools
+      - ./requirements-dev.txt:/app/requirements-dev.txt
+    ports:
+      - "8080:8080"  # Web interface
+      - "5678:5678"  # Debugger port (debugpy)
+    command: |
+      bash -c "
+        pip install -r requirements-dev.txt &&
+        python -m debugpy --listen 0.0.0.0:5678 --wait-for-client scripts/main.py
+      "
+
+  postgres:
+    environment:
+      POSTGRES_DB: caycbake_dev
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init-scripts:/docker-entrypoint-initdb.d:ro
+
+  redis:
+    command: redis-server --requirepass devpass
+    ports:
+      - "6379:6379"
+
+  # Development-only services
+  adminer:
+    image: adminer:latest
+    container_name: cayc-adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    networks:
+      - cayc-network
+    depends_on:
+      - postgres
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: cayc-redis-commander
+    restart: unless-stopped
+    environment:
+      - REDIS_HOSTS=local:redis:6379:0:devpass
+    ports:
+      - "8082:8081"
+    networks:
+      - cayc-network
+    depends_on:
+      - redis
