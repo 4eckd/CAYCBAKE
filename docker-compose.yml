@@ -14,14 +14,10 @@ services:
       - LOG_LEVEL=INFO
       - PYTHONUNBUFFERED=1
     volumes:
-      # Mount results directory for persistence
+      # Create directories if they don't exist and mount them
       - ./results:/app/results
       - ./logs:/app/logs
-      - ./wordlists:/app/wordlists:ro
-      - ./payloads:/app/payloads:ro
-      - ./configs:/app/configs:ro
-      # Mount custom scripts
-      - ./scripts:/app/scripts:ro
+      - ./scripts:/app/scripts
     networks:
       - cayc-network
     ports:
@@ -34,8 +30,6 @@ services:
       - NET_ADMIN  # Required for network scanning
     security_opt:
       - no-new-privileges:true
-    mem_limit: 2g
-    cpus: '2.0'
 
   # Optional: Database for storing scan results
   postgres:
