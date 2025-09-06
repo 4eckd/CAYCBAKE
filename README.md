@@ -78,44 +78,65 @@ schneckyirl/
 ## 🛠️ Installation
 
 ### Prerequisites
-- Ubuntu 20.04+ or WSL2 on Windows
-- Python 3.8+
-- Go 1.19+
-- 8GB RAM minimum
-- 50GB free disk space
+- **OS**: Linux, macOS, Windows (PowerShell/WSL/Git Bash)
+- **Python**: 3.8 or higher
+- **Git**: Any recent version
+- **RAM**: 4GB minimum (8GB recommended)
+- **Disk**: 5GB minimum (10GB recommended)
 
-### Quick Setup
+### 🚀 Universal Quick Install
+
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/schneckyirl.git
-cd schneckyirl
+git clone https://github.com/4eckd/cayc-bake.git
+cd cayc-bake
 
-# Run installation script
+# Run the installer for your system:
+
+# Linux/macOS/WSL:
 chmod +x install.sh
 ./install.sh
 
-# Configure environment
-cp .env.example .env
-nano .env
+# Windows PowerShell:
+.\install.ps1
+
+# Windows Git Bash:
+bash install.sh
 ```
 
-### Manual Installation
+### Installation Options
+
 ```bash
-# Install system dependencies
-sudo apt update
-sudo apt install python3 python3-pip golang-go nmap nikto dirb
+# Minimal installation (core tools only)
+./install.sh --minimal        # or: .\install.ps1 -Minimal
 
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate
+# Skip all prompts (automated)
+./install.sh --skip-prompts   # or: .\install.ps1 -SkipPrompts
 
-# Install Python packages
-pip install -r requirements.txt
+# Developer mode (all tools)
+./install.sh --dev           # or: .\install.ps1 -Dev
 
-# Install Go tools
-go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
-go install github.com/ffuf/ffuf/v2@latest
+# View help
+./install.sh --help          # or: .\install.ps1 -Help
 ```
+
+### Platform-Specific Notes
+
+**Windows PowerShell:**
+- May need to run: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
+- Installer will use winget or chocolatey if available
+
+**WSL (Windows Subsystem for Linux):**
+- Recommended for Windows users for best compatibility
+- Full Linux toolchain support
+
+**macOS:**
+- Requires Homebrew (will be installed automatically if missing)
+- Some tools may require additional permissions
+
+**Git Bash on Windows:**
+- Limited functionality - WSL recommended instead
+- Python and tools must be installed separately
 
 ---
 
@@ -267,7 +288,7 @@ This project is for educational purposes only. See LICENSE file for details.
 
 ## 📞 Contact
 
-For security issues, contact: security@example.com
+For security issues, contact: hello@jlucus.dev
 
 ---
 
