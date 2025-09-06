@@ -47,7 +47,7 @@ body:
         - Windows 11
         - Windows 10
         - WSL Ubuntu
-        - WSL Other
+        - WSL or Other
         - Ubuntu
         - Debian
         - Arch Linux
