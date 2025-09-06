@@ -1,0 +1,61 @@
+name: cayc-bake-ci-cd
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      # Secret Scanning
+      - name: TruffleHog Secret Scan
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          
+      # SAST Scanning
+      - name: Semgrep
+        uses: returntocorp/semgrep-action@v1
+        
+      # Dependency Check
+      - name: Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        
+  test-suite:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: [3.8, 3.9, 3.10, 3.11]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: Run Tests
+        run: |
+          pytest tests/
+          
+  installer-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Test Installer
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            pwsh -File install.ps1 -SkipPrompts -Minimal
+          else
+            bash install.sh --skip-prompts --minimal
+          fi
