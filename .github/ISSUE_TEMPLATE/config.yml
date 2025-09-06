@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🔒 Security Vulnerability
+    url: https://github.com/4eckd/cayc-bake/security/advisories/new
+    about: Please report security vulnerabilities privately
+  - name: 💬 Discussions
+    url: https://github.com/4eckd/cayc-bake/discussions
+    about: Ask questions and discuss ideas
+  - name: 📚 Documentation
+    url: https://github.com/4eckd/cayc-bake/wiki
+    about: Check our documentation and guides
+  - name: 🤝 Contributing Guide
+    url: https://github.com/4eckd/cayc-bake/blob/main/CONTRIBUTING.md
+    about: Learn how to contribute to CAYC BAKE
