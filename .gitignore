@@ -1,0 +1,743 @@
+# CAYC BAKE - Come At You, Clown - Security Testing Framework
+# Comprehensive .gitignore for Python, Node.js, and Security Testing
+# Author: @jlucus https://github.com/jlucus
+# Version: 2.1.0
+
+#############################
+# Python
+#############################
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+.pdm.toml
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+virtualenv/
+pyenv/
+pyvenv.cfg
+pip-selfcheck.json
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+#############################
+# Node.js / JavaScript
+#############################
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Directory for instrumented libs
+lib-cov
+
+# Coverage directory
+coverage
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Grunt intermediate storage
+.grunt
+
+# Bower dependency directory
+bower_components
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons
+build/Release
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Snowpack dependency directory
+web_modules/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# parcel-bundler cache
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+out
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+# Comment in the public line in if your project uses Gatsby
+# public
+
+# vuepress build output
+.vuepress/dist
+
+# vuepress v2.x temp and cache directory
+.temp
+.cache
+
+# Docusaurus cache and generated files
+.docusaurus
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions
+.vscode-test
+
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+#############################
+# Go
+#############################
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Dependency directories
+vendor/
+
+# Go workspace file
+go.work
+
+#############################
+# IDE and Editor Files
+#############################
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+.history/
+*.code-workspace
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.idea_modules/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+Session.vim
+Sessionx.vim
+.netrwhist
+*~
+tags
+[._]*.un~
+
+# Emacs
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Atom
+.atom/
+
+# Kate
+*.kate-swp
+
+#############################
+# Operating System Files
+#############################
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+#############################
+# Security Testing Artifacts
+#############################
+
+# Scan Results
+results/*.json
+results/*.xml
+results/*.html
+results/*.txt
+results/*.csv
+results/raw/
+results/processed/
+results/reports/
+
+# Log files
+logs/*.log
+logs/*.txt
+logs/debug/
+logs/error/
+logs/access/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.backup
+*.old
+*.orig
+*.save
+
+# Testing Artifacts
+*.pcap
+*.cap
+*.dmp
+core.*
+test_runs/
+test_results/
+scan_*/
+
+# Screenshots
+screenshots/
+captures/
+
+# Report generation
+reports/*.pdf
+reports/*.docx
+reports/drafts/
+
+#############################
+# Sensitive Data & Credentials
+#############################
+
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.template
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Keys and certificates
+*.key
+*.pem
+*.cert
+*.crt
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.truststore
+
+# Credentials
+credentials.json
+credentials/
+secrets.json
+secrets/
+.secrets/
+api_keys.txt
+passwords.txt
+tokens.json
+.api_keys
+.tokens
+auth.json
+.auth
+
+# Config files with secrets
+config.ini
+config.yaml
+config.yml
+!config.example.*
+!config.template.*
+settings.json
+!settings.example.json
+
+#############################
+# Database Files
+#############################
+
+*.db
+*.sqlite
+*.sqlite3
+*.sql
+extracted_data.db
+*.mdb
+*.accdb
+
+#############################
+# Tool-Specific Files
+#############################
+
+# Wordlists (large files)
+wordlists/SecLists/
+wordlists/*.txt
+wordlists/*.txt.gz
+wordlists/*.zip
+wordlists/rockyou.txt
+wordlists/large/
+!wordlists/.gitkeep
+
+# Tool downloads
+tools/*/
+!tools/.gitkeep
+!tools/reconnaissance/.gitkeep
+!tools/web_testing/.gitkeep
+!tools/fuzzing/.gitkeep
+!tools/exploitation/.gitkeep
+!tools/csrf/.gitkeep
+!tools/cloud/.gitkeep
+!tools/crypto/.gitkeep
+!tools/scraping/.gitkeep
+!tools/analysis/.gitkeep
+!tools/networking/.gitkeep
+
+# Tool outputs
+tools/*/output/
+tools/*/results/
+tools/*/logs/
+
+# Payloads
+payloads/*/*.txt
+payloads/*/*.json
+payloads/*/*.xml
+payloads/generated/
+payloads/custom/*.tmp
+payloads/private/
+payloads/0day/
+!payloads/*/.gitkeep
+
+# Custom scripts
+scripts/automation/*.output
+scripts/reporting/*.html
+scripts/reporting/*.pdf
+scripts/custom/
+scripts/private/
+
+# Exploitation artifacts
+exploits/compiled/
+exploits/testing/
+
+# Session data
+sessions/
+.sessions/
+
+# Proxy certificates
+proxy_certs/
+burp/
+zap/
+mitmproxy/
+
+# Metasploit
+.msf4/
+msf_*
+
+# Nuclei templates (if private)
+nuclei-templates/private/
+
+# Client/Target data
+client_data/
+customer_data/
+targets/
+
+# Legal documents
+contracts/
+agreements/
+ndas/
+
+#############################
+# Archives & Compressed Files
+#############################
+
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.gz
+*.bz2
+*.xz
+*.war
+*.jar
+*.ear
+!examples/*.zip
+!samples/*.tar.gz
+
+#############################
+# Docker
+#############################
+
+# Docker project files
+docker/data/
+.docker/
+.dockercfg
+docker-compose.override.yml
+*.dockerignore
+
+#############################
+# Terraform
+#############################
+
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# Crash log files
+crash.log
+crash.*.log
+
+# Exclude all .tfvars files
+*.tfvars
+*.tfvars.json
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI configuration files
+.terraformrc
+terraform.rc
+
+#############################
+# Kubernetes
+#############################
+
+# Helm charts
+charts/
+*.tgz
+
+# Kubernetes configs
+kubeconfig
+.kube/
+
+#############################
+# Build Outputs
+#############################
+
+# General build directories
+build/
+dist/
+out/
+target/
+bin/
+obj/
+
+# Maven
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Gradle
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake-build-*/
+
+# Make
+Makefile.in
+
+#############################
+# Backup Files
+#############################
+
+*.bak
+*.backup
+*.old
+*.orig
+*.original
+*.save
+*.saved
+*.recovery
+*~
+
+#############################
+# Temporary Directories
+#############################
+
+tmp/
+temp/
+cache/
+.tmp/
+.temp/
+.cache/
+
+#############################
+# CAYC BAKE Specific
+#############################
+
+# Framework specific
+cayc_data/
+bake_output/
+kitchen/
+oven/
+
+# Attack logs
+attack_logs/
+breach_data/
+
+# Vulnerability reports
+vuln_reports/
+findings/
+
+# End of .gitignore

@@ -1,0 +1,37 @@
+name: releases
+
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: git fetch --force --tags
+      - uses: actions/setup-go@v4
+        with:
+          go-version: stable
+      - name: goreleaser
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release -f ./packaging/.goreleaser.yaml --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: winget
+        uses: vedantmgoyal2009/winget-releaser@main
+        with:
+          identifier: sa7mon.S3Scanner
+          max-versions-to-keep: 5
+          installers-regex: '_Windows_\w+\.zip$'
+          token: ${{ secrets.PACKAGING_TOKEN }}

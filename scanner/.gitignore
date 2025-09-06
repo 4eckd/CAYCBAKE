@@ -1,0 +1,10 @@
+.idea/
+*.log
+logs/
+.DS_Store
+*.sql.gz
+data/
+bin/*
+*.out
+dist/
+packaging/dist/
