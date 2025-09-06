@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # CAYC BAKE - Universal Installation Script (Bash)
 # Works on: Linux, macOS, WSL, Git Bash on Windows
-# Version: 2.1.0
+# Version: 2.2.0
 # Author: @jlucus https://github.com/jlucus
 
 set -e
@@ -158,15 +158,20 @@ check_requirements() {
     local issues=()
     
     # Check Python
-    echo -n "  Checking Python 3.8+... "
-    if command -v python3 &> /dev/null; then
-        python_version=$(python3 --version 2>&1 | grep -oE '[0-9]+\.[0-9]+' | head -1)
-        if [[ $(echo "$python_version >= 3.8" | bc -l 2>/dev/null || echo 0) -eq 1 ]]; then
+    echo -n "  Checking Python 3.10+... "
+    if command -v python3.10 &> /dev/null || command -v python3 &> /dev/null; then
+        if command -v python3.10 &> /dev/null; then
+            python_cmd="python3.10"
+        else
+            python_cmd="python3"
+        fi
+        python_version=$($python_cmd --version 2>&1 | grep -oE '[0-9]+\.[0-9]+' | head -1)
+        if [[ $(echo "$python_version >= 3.10" | bc -l 2>/dev/null || echo 0) -eq 1 ]]; then
             print_success "($python_version)"
         else
-            print_error "(Found $python_version, need 3.8+)"
+            print_error "(Found $python_version, need 3.10+)"
             requirements_met=false
-            issues+=("Python 3.8+ required")
+            issues+=("Python 3.10+ required")
         fi
     elif command -v python &> /dev/null; then
         python_version=$(python --version 2>&1 | grep -oE '[0-9]+\.[0-9]+' | head -1)
@@ -256,6 +261,81 @@ check_requirements() {
     fi
 }
 
+# Install Python if needed
+install_python() {
+    print_step "Checking Python Installation"
+    
+    local required_version="3.10"
+    local needs_install=false
+    local python_cmd=""
+    
+    # Check for Python 3.10+
+    if command -v python3.10 &> /dev/null; then
+        python_cmd="python3.10"
+        python_version=$(python3.10 --version 2>&1 | grep -oE '[0-9]+\.[0-9]+')
+        print_success "Python $python_version is already installed"
+        return
+    elif command -v python3 &> /dev/null; then
+        python_version=$(python3 --version 2>&1 | grep -oE '[0-9]+\.[0-9]+')
+        if [[ $(echo "$python_version >= $required_version" | bc -l 2>/dev/null || echo 0) -eq 1 ]]; then
+            print_success "Python $python_version is already installed"
+            return
+        else
+            print_warning "Python $python_version found, but 3.10+ required. Installing..."
+            needs_install=true
+        fi
+    else
+        print_warning "Python not found. Installing Python 3.10+..."
+        needs_install=true
+    fi
+    
+    if [[ "$needs_install" == true ]]; then
+        if [[ "$IS_MACOS" == true ]]; then
+            # macOS - use Homebrew
+            print_info "Installing Python 3.10 via Homebrew..."
+            if ! command -v brew &> /dev/null; then
+                /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+            fi
+            brew install python@3.10
+            brew link python@3.10
+            
+        elif [[ "$IS_LINUX" == true ]] || [[ "$IS_WSL" == true ]]; then
+            # Linux/WSL
+            if command -v apt &> /dev/null; then
+                print_info "Installing Python 3.10 via apt..."
+                sudo apt update
+                sudo apt install -y software-properties-common
+                sudo add-apt-repository -y ppa:deadsnakes/ppa 2>/dev/null || true
+                sudo apt update
+                sudo apt install -y python3.10 python3.10-venv python3.10-dev python3-pip
+                
+                # Set python3.10 as alternative
+                sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+                
+            elif command -v yum &> /dev/null || command -v dnf &> /dev/null; then
+                PKG_MANAGER=$(command -v dnf || command -v yum)
+                print_info "Installing Python 3.10 via $PKG_MANAGER..."
+                sudo $PKG_MANAGER install -y python3.10 python3.10-devel python3-pip
+                
+            elif command -v pacman &> /dev/null; then
+                print_info "Installing Python via pacman..."
+                sudo pacman -S --noconfirm python python-pip
+                
+            else
+                print_error "Unable to install Python automatically. Please install Python 3.10+ manually."
+                exit 1
+            fi
+            
+        elif [[ "$IS_GIT_BASH" == true ]]; then
+            print_warning "Git Bash detected. Please install Python 3.10+ for Windows manually:"
+            print_info "Download from: https://www.python.org/downloads/"
+            exit 1
+        fi
+        
+        print_success "Python installation completed"
+    fi
+}
+
 # Install system packages based on OS
 install_system_packages() {
     print_step "Installing System Packages"
@@ -330,7 +410,9 @@ setup_python_env() {
     print_step "Setting up Python Environment"
     
     # Determine Python command
-    if command -v python3 &> /dev/null; then
+    if command -v python3.10 &> /dev/null; then
+        PYTHON_CMD="python3.10"
+    elif command -v python3 &> /dev/null; then
         PYTHON_CMD="python3"
     elif command -v python &> /dev/null; then
         PYTHON_CMD="python"
@@ -339,11 +421,44 @@ setup_python_env() {
         exit 1
     fi
     
+    print_info "Using Python command: $PYTHON_CMD"
+    
+    # Ensure pip is installed
+    print_info "Ensuring pip is installed..."
+    $PYTHON_CMD -m ensurepip --upgrade 2>/dev/null || {
+        print_info "Installing pip..."
+        curl -sS https://bootstrap.pypa.io/get-pip.py | $PYTHON_CMD
+    }
+    
+    # Upgrade pip
+    print_info "Upgrading pip..."
+    $PYTHON_CMD -m pip install --upgrade pip --quiet
+    
+    # Check if venv module is available
+    if ! $PYTHON_CMD -c "import venv" 2>/dev/null; then
+        print_info "Installing venv module..."
+        if [[ "$IS_LINUX" == true ]] || [[ "$IS_WSL" == true ]]; then
+            if command -v apt &> /dev/null; then
+                sudo apt install -y python3.10-venv || sudo apt install -y python3-venv
+            elif command -v yum &> /dev/null; then
+                sudo yum install -y python3-venv
+            fi
+        fi
+        # Fallback to virtualenv
+        $PYTHON_CMD -m pip install virtualenv --quiet
+    fi
+    
     # Create virtual environment
     if [[ ! -d "venv" ]]; then
         print_info "Creating virtual environment..."
-        $PYTHON_CMD -m venv venv
-        print_success "Virtual environment created"
+        if $PYTHON_CMD -m venv venv 2>/dev/null; then
+            print_success "Virtual environment created"
+        else
+            # Fallback to virtualenv
+            print_warning "venv failed, using virtualenv..."
+            $PYTHON_CMD -m virtualenv venv
+            print_success "Virtual environment created with virtualenv"
+        fi
     else
         print_info "Virtual environment already exists"
     fi
@@ -714,6 +829,9 @@ main() {
     
     # Run installation steps
     check_requirements
+    
+    # Install Python if needed
+    install_python
     
     # Ask for system package installation
     if [[ "$MINIMAL" == false ]] && [[ "$SKIP_PROMPTS" == false ]]; then

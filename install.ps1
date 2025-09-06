@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 # CAYC BAKE - Universal Installation Script (PowerShell)
 # Works on: Windows PowerShell, PowerShell Core, WSL
-# Version: 2.1.0
+# Version: 2.2.0
 # Author: @jlucus https://github.com/jlucus
 
 param(
@@ -144,14 +144,14 @@ function Test-Requirements {
     }
     
     # Check Python
-    Write-Host -NoNewline "  Checking Python 3.8+... "
+    Write-Host -NoNewline "  Checking Python 3.10+... "
     if ($SystemInfo.HasPython) {
         $version = $SystemInfo.PythonVersion
-        if ([version]$version -ge [version]"3.8") {
+        if ([version]$version -ge [version]"3.10") {
             Write-Success "($version)"
         } else {
-            Write-Error "(Found $version, need 3.8+)"
-            $requirements.Issues += "Python 3.8+ required"
+            Write-Error "(Found $version, need 3.10+)"
+            $requirements.Issues += "Python 3.10+ required"
             $requirements.Met = $false
         }
     } else {
@@ -197,6 +197,72 @@ function Test-Requirements {
     
     Write-Host ""
     return $requirements
+}
+
+# Install Python if needed
+function Install-Python {
+    param($SystemInfo)
+    
+    Write-Step "Checking Python Installation"
+    
+    $requiredVersion = [version]"3.10.0"
+    $needsInstall = $false
+    
+    if (-not $SystemInfo.HasPython) {
+        Write-Warning "Python not found. Installing Python 3.10+..."
+        $needsInstall = $true
+    } else {
+        $currentVersion = [version]$SystemInfo.PythonVersion
+        if ($currentVersion -lt $requiredVersion) {
+            Write-Warning "Python $($SystemInfo.PythonVersion) found, but 3.10+ required. Installing..."
+            $needsInstall = $true
+        } else {
+            Write-Success "Python $($SystemInfo.PythonVersion) is already installed"
+            return
+        }
+    }
+    
+    if ($needsInstall) {
+        if ($SystemInfo.IsWindows -and -not $SystemInfo.IsWSL) {
+            # Windows - use winget or download directly
+            $hasWinget = (Get-Command winget -ErrorAction SilentlyContinue) -ne $null
+            
+            if ($hasWinget) {
+                Write-Info "Installing Python via winget..."
+                winget install --id Python.Python.3.10 --silent --accept-package-agreements --accept-source-agreements
+            } else {
+                Write-Info "Downloading Python installer..."
+                $pythonUrl = "https://www.python.org/ftp/python/3.10.11/python-3.10.11-amd64.exe"
+                $installerPath = "$env:TEMP\python-installer.exe"
+                
+                Invoke-WebRequest -Uri $pythonUrl -OutFile $installerPath
+                Start-Process -FilePath $installerPath -ArgumentList "/quiet", "InstallAllUsers=1", "PrependPath=1" -Wait
+                Remove-Item $installerPath
+            }
+        } elseif ($SystemInfo.IsLinux -or $SystemInfo.IsWSL) {
+            # Linux/WSL - use deadsnakes PPA for Ubuntu/Debian
+            Write-Info "Installing Python 3.10 via package manager..."
+            
+            if (Get-Command apt -ErrorAction SilentlyContinue) {
+                sudo apt update
+                sudo apt install -y software-properties-common
+                sudo add-apt-repository -y ppa:deadsnakes/ppa
+                sudo apt update
+                sudo apt install -y python3.10 python3.10-venv python3.10-dev python3-pip
+                
+                # Set python3.10 as default python3
+                sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+            } elseif (Get-Command yum -ErrorAction SilentlyContinue) {
+                sudo yum install -y python3.10 python3.10-devel python3-pip
+            }
+        } elseif ($SystemInfo.IsMacOS) {
+            # macOS - use Homebrew
+            Write-Info "Installing Python 3.10 via Homebrew..."
+            brew install python@3.10
+        }
+        
+        Write-Success "Python installation completed"
+    }
 }
 
 # Install system packages based on OS
@@ -281,12 +347,58 @@ function Install-SystemPackages {
 function Initialize-PythonEnvironment {
     Write-Step "Setting up Python Environment"
     
-    $pythonCmd = if (Get-Command python3 -ErrorAction SilentlyContinue) { "python3" } else { "python" }
+    # Determine Python command
+    $pythonCmd = if (Get-Command python3.10 -ErrorAction SilentlyContinue) { 
+        "python3.10" 
+    } elseif (Get-Command python3 -ErrorAction SilentlyContinue) { 
+        "python3" 
+    } else { 
+        "python" 
+    }
+    
+    Write-Info "Using Python command: $pythonCmd"
+    
+    # Ensure pip is installed
+    Write-Info "Ensuring pip is installed..."
+    & $pythonCmd -m ensurepip --upgrade 2>$null
+    if (-not $?) {
+        Write-Info "Installing pip..."
+        $pipScript = New-TemporaryFile
+        Invoke-WebRequest -Uri "https://bootstrap.pypa.io/get-pip.py" -OutFile $pipScript
+        & $pythonCmd $pipScript
+        Remove-Item $pipScript
+    }
+    
+    # Upgrade pip
+    Write-Info "Upgrading pip..."
+    & $pythonCmd -m pip install --upgrade pip --quiet
+    
+    # Install venv if not available
+    Write-Info "Checking venv module..."
+    $venvCheck = & $pythonCmd -c "import venv" 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        Write-Info "Installing venv module..."
+        if ($IsWindows) {
+            & $pythonCmd -m pip install virtualenv --quiet
+        } else {
+            # On Linux, install python3-venv package
+            if (Get-Command apt -ErrorAction SilentlyContinue) {
+                sudo apt install -y python3.10-venv
+            } elseif (Get-Command yum -ErrorAction SilentlyContinue) {
+                sudo yum install -y python3-venv
+            }
+        }
+    }
     
     # Create virtual environment
     if (-not (Test-Path "venv")) {
         Write-Info "Creating virtual environment..."
         & $pythonCmd -m venv venv
+        if (-not (Test-Path "venv")) {
+            # Fallback to virtualenv if venv fails
+            Write-Warning "venv failed, trying virtualenv..."
+            & $pythonCmd -m virtualenv venv
+        }
         Write-Success "Virtual environment created"
     } else {
         Write-Info "Virtual environment already exists"
@@ -660,6 +772,12 @@ function Start-Installation {
             exit 1
         }
     }
+    
+    # Install Python if needed or wrong version
+    Install-Python -SystemInfo $systemInfo
+    
+    # Re-check system info after potential Python installation
+    $systemInfo = Get-SystemInfo
     
     # Installation steps
     if (-not $Minimal) {
